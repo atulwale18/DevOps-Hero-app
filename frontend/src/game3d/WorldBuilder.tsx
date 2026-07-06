@@ -33,6 +33,13 @@ export default function WorldBuilder() {
   const grafanaTex = useTexture('/assets/grafana.png');
   const terraformTex = useTexture('/assets/terraform.png');
   
+  const stonePathTex = useTexture('/assets/stone_path.png');
+  const stoneWallTex = useTexture('/assets/stone_wall.png');
+  
+  // Configure repeating textures for the floor
+  stonePathTex.wrapS = stonePathTex.wrapT = THREE.RepeatWrapping;
+  stonePathTex.repeat.set(3, CHUNK_SIZE / 5);
+  
   const powerupTextures = [jenkinsTex, grafanaTex, terraformTex, dockerTex, k8sTex];
   
   // Track how far the world has shifted overall to spawn new chunks
@@ -129,27 +136,19 @@ export default function WorldBuilder() {
     <group ref={worldRef}>
       {chunks.map((chunk) => (
         <group key={chunk.id} position={[0, 0, chunk.zBase]}>
-          {/* Cyberpunk Grid Floor */}
-          <Grid 
-            position={[0, -0.1, -CHUNK_SIZE / 2]} 
-            args={[LANE_WIDTH * 3 + 4, CHUNK_SIZE]} 
-            cellSize={1} 
-            cellThickness={1.5} 
-            cellColor="#3b82f6" 
-            sectionSize={LANE_WIDTH} 
-            sectionThickness={2.5} 
-            sectionColor="#6366f1" 
-            fadeDistance={80} 
-            fadeStrength={1} 
-          />
+          {/* Stone Path Floor */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.1, -CHUNK_SIZE / 2]}>
+            <planeGeometry args={[LANE_WIDTH * 3 + 2, CHUNK_SIZE]} />
+            <meshStandardMaterial map={stonePathTex} color="#aaaaaa" roughness={0.8} metalness={0.1} />
+          </mesh>
           
           <mesh position={[-1.5, 0, -CHUNK_SIZE / 2]} rotation={[-Math.PI / 2, 0, 0]}>
             <planeGeometry args={[0.2, CHUNK_SIZE]} />
-            <meshBasicMaterial color="#ec4899" transparent opacity={0.3} />
+            <meshBasicMaterial color="#000000" transparent opacity={0.3} />
           </mesh>
           <mesh position={[1.5, 0, -CHUNK_SIZE / 2]} rotation={[-Math.PI / 2, 0, 0]}>
             <planeGeometry args={[0.2, CHUNK_SIZE]} />
-            <meshBasicMaterial color="#ec4899" transparent opacity={0.3} />
+            <meshBasicMaterial color="#000000" transparent opacity={0.3} />
           </mesh>
 
           {chunk.obstacles.map(obs => {
@@ -166,7 +165,7 @@ export default function WorldBuilder() {
                 {obs.type === 'barrier' && (
                   <mesh castShadow position={[0, 1, 0]}>
                     <boxGeometry args={[2.5, 2, 1]} />
-                    <meshStandardMaterial color="#0f172a" emissive="#ef4444" emissiveIntensity={0.8} />
+                    <meshStandardMaterial map={stoneWallTex} color="#bbbbbb" roughness={0.9} />
                   </mesh>
                 )}
                 {obs.type === 'terminal' && (

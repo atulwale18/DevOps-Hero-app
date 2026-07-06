@@ -50,27 +50,36 @@ export default function Game2D() {
         const dx = newX - serverPos.x;
         const dy = newY - serverPos.y;
         const distance = Math.sqrt(dx*dx + dy*dy);
-
-        if (distance < interactRadius && !interacted.current) {
-          interacted.current = true;
-          
-          const completed = useGameStore.getState().completedMissions;
-          const nextMission = linuxMissions.find(m => !completed.includes(m.id));
-          
-          if (nextMission) {
-            useGameStore.getState().setMission(nextMission);
-          } else {
-            useGameStore.getState().setMission({
-               id: 'complete',
-               title: 'Level Complete',
-               description: 'All Linux Village tasks complete. Proceed to Git Island! (Type: exit)',
-               expectedCommand: /^exit$/,
-               rewardXP: 0
-            });
+        
+        // Only trigger if entering the radius (was outside, now inside)
+        if (distance < interactRadius) {
+          if (!interacted.current) {
+            interacted.current = true;
+            
+            const completed = useGameStore.getState().completedMissions || [];
+            const safeMissions = Array.isArray(linuxMissions) && linuxMissions.length > 0 
+              ? linuxMissions 
+              : [{ id: 'linux-1', title: 'Create directories', description: 'Create a new directory named "project". Use the mkdir command.', expectedCommand: /^mkdir project$/, rewardXP: 15, hint: 'Use mkdir followed by the directory name.' }];
+              
+            const nextMission = safeMissions.find(m => !completed.includes(m.id));
+            
+            if (nextMission) {
+              useGameStore.getState().setMission(nextMission);
+            } else {
+              useGameStore.getState().setMission({
+                 id: 'complete',
+                 title: 'Level Complete',
+                 description: 'All Linux Village tasks complete. Proceed to Git Island! (Type: exit)',
+                 expectedCommand: /^exit$/,
+                 rewardXP: 0
+              });
+            }
+            
+            useGameStore.getState().toggleTerminal(true);
           }
-          
-          useGameStore.getState().toggleTerminal(true);
-          setTimeout(() => { interacted.current = false; }, 4000);
+        } else {
+          // Reset interaction when player walks away
+          interacted.current = false;
         }
 
         return { x: newX, y: newY };
@@ -127,6 +136,12 @@ export default function Game2D() {
            }}
         >
           <img src="/assets/player.png" className="w-full h-full object-cover rounded-full border-4 border-blue-500 shadow-[0_0_50px_rgba(59,130,246,0.9)]" alt="Player Robot" />
+        {/* Debug UI */}
+        <div className="absolute top-4 right-4 text-white z-50 bg-black/80 p-4 border border-red-500 font-mono text-xs">
+          <p>Debug Info:</p>
+          <p>Terminal Open: {useGameStore(s => s.isTerminalOpen) ? 'Yes' : 'No'}</p>
+          <p>Completed: {useGameStore(s => s.completedMissions).join(', ')}</p>
+          <p>Total Missions: {linuxMissions.length}</p>
         </div>
       </div>
     </div>

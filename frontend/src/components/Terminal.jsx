@@ -37,8 +37,9 @@ export default function Terminal() {
         addBadge(currentMission.rewardBadge);
       }
       
-      // Auto close after delay
+      // Complete mission and Auto close after delay
       setTimeout(() => {
+        useGameStore.getState().completeMission(currentMission.id);
         toggleTerminal(false);
         setHistory([]);
       }, 2000);

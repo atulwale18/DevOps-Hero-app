@@ -4,6 +4,8 @@ import { useGameStore } from '../store/useGameStore';
 import { Text, Float } from '@react-three/drei';
 import * as THREE from 'three';
 
+import { linuxMissions } from '../data/missions';
+
 export default function MissionStation({ position }) {
   const interacted = useRef(false);
   const stationWorldPos = new THREE.Vector3(...position);
@@ -13,17 +15,23 @@ export default function MissionStation({ position }) {
     const distance = stationWorldPos.distanceTo(playerPos);
 
     if (distance < 3.5 && !interacted.current && !useGameStore.getState().isTerminalOpen) {
+      const completed = useGameStore.getState().completedMissions;
+      const nextMission = linuxMissions.find(m => !completed.includes(m.id));
+
       interacted.current = true;
       
-      useGameStore.getState().setMission({
-        id: 1,
-        title: 'Linux: File Backup',
-        description: 'Create a backup of the logs folder. Use tar -czvf backup.tar logs/',
-        expectedCommand: /^tar -czvf backup\.tar logs\/?$/,
-        rewardXP: 100,
-        rewardBadge: 'Linux Explorer',
-        hint: 'Use tar with -czvf flags.'
-      });
+      if (nextMission) {
+        useGameStore.getState().setMission(nextMission);
+      } else {
+        useGameStore.getState().setMission({
+          id: 'complete',
+          title: 'Level Complete',
+          description: 'All Linux Village tasks complete. Proceed to Git Island! (Type: exit)',
+          expectedCommand: /^exit$/,
+          rewardXP: 0
+        });
+      }
+      
       useGameStore.getState().toggleTerminal(true);
       
       setTimeout(() => { interacted.current = false; }, 4000);

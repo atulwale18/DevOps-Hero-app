@@ -8,12 +8,12 @@ export default function GameRunner() {
   return (
     <div className="absolute inset-0 z-0 bg-[#050510]">
       <Canvas shadows camera={{ position: [0, 5, 12], fov: 60, rotation: [-0.2, 0, 0] }}>
-        <ambientLight intensity={0.2} color="#4c1d95" />
+        <ambientLight intensity={0.5} color="#4c1d95" />
         <directionalLight 
           castShadow 
-          position={[0, 20, -10]} 
-          intensity={2} 
-          color="#3b82f6"
+          position={[5, 10, 15]} 
+          intensity={3} 
+          color="#60a5fa"
           shadow-mapSize={[1024, 1024]}
         />
         <pointLight position={[0, 2, -20]} intensity={5} color="#ec4899" distance={50} />

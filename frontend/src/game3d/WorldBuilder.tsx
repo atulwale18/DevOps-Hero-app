@@ -14,6 +14,7 @@ interface ObstacleData {
   lane: number;
   zOffset: number;
   type: 'barrier' | 'terminal' | 'coin';
+  powerupTexIdx?: number;
 }
 
 interface ChunkData {
@@ -28,6 +29,11 @@ export default function WorldBuilder() {
   
   const dockerTex = useTexture('/assets/docker.png');
   const k8sTex = useTexture('/assets/k8s.png');
+  const jenkinsTex = useTexture('/assets/jenkins.png');
+  const grafanaTex = useTexture('/assets/grafana.png');
+  const terraformTex = useTexture('/assets/terraform.png');
+  
+  const powerupTextures = [jenkinsTex, grafanaTex, terraformTex, dockerTex, k8sTex];
   
   // Track how far the world has shifted overall to spawn new chunks
   const worldOffsetZ = useRef(0);
@@ -58,7 +64,8 @@ export default function WorldBuilder() {
           id: Math.random().toString(),
           lane,
           zOffset,
-          type
+          type,
+          powerupTexIdx: Math.floor(Math.random() * powerupTextures.length)
         });
       }
     }
@@ -149,7 +156,10 @@ export default function WorldBuilder() {
             if ((obs as any).hasCollided && obs.type === 'coin') return null;
 
             const isDocker = Math.random() > 0.5;
-            const tex = isDocker ? dockerTex : k8sTex;
+            const terminalTex = isDocker ? dockerTex : k8sTex;
+            
+            // Render specific DevOps tool logo for 'coin'
+            const powerupTex = obs.powerupTexIdx !== undefined ? powerupTextures[obs.powerupTexIdx] : dockerTex;
 
             return (
               <group key={obs.id} position={[obs.lane * LANE_WIDTH, 0, -obs.zOffset]}>
@@ -162,13 +172,13 @@ export default function WorldBuilder() {
                 {obs.type === 'terminal' && (
                   <mesh castShadow position={[0, 1.5, 0]}>
                     <boxGeometry args={[2, 3, 0.5]} />
-                    <meshStandardMaterial map={tex} color="#3b82f6" emissive="#1d4ed8" emissiveIntensity={0.2} />
+                    <meshStandardMaterial map={terminalTex} color="#3b82f6" emissive="#1d4ed8" emissiveIntensity={0.2} />
                   </mesh>
                 )}
                 {obs.type === 'coin' && (
-                  <mesh castShadow position={[0, 1, 0]} rotation={[0, Math.random() * Math.PI, 0]}>
-                    <cylinderGeometry args={[0.6, 0.6, 0.2, 16]} />
-                    <meshStandardMaterial color="#eab308" emissive="#ca8a04" metalness={1} roughness={0.1} />
+                  <mesh castShadow position={[0, 1, 0]}>
+                    <boxGeometry args={[1, 1, 1]} />
+                    <meshStandardMaterial map={powerupTex} emissive="#ffffff" emissiveIntensity={0.1} />
                   </mesh>
                 )}
               </group>

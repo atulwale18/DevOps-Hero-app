@@ -3,18 +3,37 @@ import { useGameStore } from '../store/useGameStore';
 import { Heart, HeartCrack, Zap, Trophy, ShieldAlert } from 'lucide-react';
 
 export default function Dashboard() {
-  const { score, distance, health, maxHealth, multiplier, isPlaying, isGameOver, startGame } = useGameStore();
+  const { score, distance, health, maxHealth, multiplier, isPlaying, isGameOver, startGame, characterModel, setCharacter } = useGameStore();
 
   if (!isPlaying && !isGameOver) {
     return (
       <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80">
         <div className="text-center">
-          <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 mb-8 drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]">
+          <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 mb-4 drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]">
             DEVOPS RUNNER
           </h1>
+          <p className="text-slate-400 mb-8 uppercase tracking-widest">Select Your Engineer</p>
+          
+          <div className="flex justify-center gap-6 mb-12">
+            <button 
+              onClick={() => setCharacter('boy')}
+              className={`px-8 py-6 rounded-2xl border-2 transition-all ${characterModel === 'boy' ? 'bg-blue-900/50 border-blue-500 scale-110' : 'bg-slate-900 border-slate-700 opacity-60 hover:opacity-100'}`}
+            >
+              <div className="text-4xl mb-2">👦</div>
+              <div className="font-bold text-blue-200">DevOps Boy</div>
+            </button>
+            <button 
+              onClick={() => setCharacter('girl')}
+              className={`px-8 py-6 rounded-2xl border-2 transition-all ${characterModel === 'girl' ? 'bg-pink-900/50 border-pink-500 scale-110' : 'bg-slate-900 border-slate-700 opacity-60 hover:opacity-100'}`}
+            >
+              <div className="text-4xl mb-2">👧</div>
+              <div className="font-bold text-pink-200">DevOps Girl</div>
+            </button>
+          </div>
+
           <button 
             onClick={startGame}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full text-xl shadow-[0_0_30px_rgba(37,99,235,0.5)] transition-all hover:scale-105"
+            className="px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full text-xl shadow-[0_0_30px_rgba(37,99,235,0.5)] transition-all hover:scale-105"
           >
             INITIALIZE DEPLOYMENT
           </button>

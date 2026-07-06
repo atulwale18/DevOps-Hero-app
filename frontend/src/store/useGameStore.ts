@@ -24,9 +24,10 @@ type GameState = {
   
   // Active Quiz
   currentQuestion: Question | null;
+  askedQuestionIds: string[];
   
   // Player Configuration
-  characterModel: 'male' | 'female';
+  characterModel: 'boy' | 'girl';
   playerLane: number;
   
   // Actions
@@ -36,7 +37,7 @@ type GameState = {
   addDistance: (amount: number) => void;
   takeDamage: () => void;
   collectPowerup: (type: string) => void;
-  setCharacter: (model: 'male' | 'female') => void;
+  setCharacter: (model: 'boy' | 'girl') => void;
   reset: () => void;
 };
 
@@ -54,13 +55,18 @@ export const useGameStore = create<GameState>((set) => ({
   isGameOver: false,
   isPausedForQuiz: false,
   currentQuestion: null,
+  askedQuestionIds: [],
   
-  characterModel: 'male',
+  characterModel: 'boy',
   playerLane: 0,
   
-  startGame: () => set({ isPlaying: true, isGameOver: false, isPausedForQuiz: false, score: 0, distance: 0, health: 3, speed: INITIAL_SPEED, multiplier: 1, playerLane: 0 }),
+  startGame: () => set({ isPlaying: true, isGameOver: false, isPausedForQuiz: false, score: 0, distance: 0, health: 3, speed: INITIAL_SPEED, multiplier: 1, playerLane: 0, askedQuestionIds: [] }),
   
-  pauseForQuiz: (q) => set({ isPausedForQuiz: true, currentQuestion: q }),
+  pauseForQuiz: (q) => set((state) => ({ 
+    isPausedForQuiz: true, 
+    currentQuestion: q,
+    askedQuestionIds: [...state.askedQuestionIds, q.id]
+  })),
   
   answerQuiz: (isCorrect) => set((state) => {
     if (isCorrect) {

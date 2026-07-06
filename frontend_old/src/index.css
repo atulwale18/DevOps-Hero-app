@@ -7,6 +7,6 @@
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevent scrolling for the game */
-  background-color: #0f172a; /* Slate 900 for dark mode */
+  overflow: hidden;
+  background-color: #0f172a;
 }

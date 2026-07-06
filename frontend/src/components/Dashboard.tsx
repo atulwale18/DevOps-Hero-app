@@ -17,17 +17,17 @@ export default function Dashboard() {
           <div className="flex justify-center gap-6 mb-12">
             <button 
               onClick={() => setCharacter('boy')}
-              className={`px-8 py-6 rounded-2xl border-2 transition-all ${characterModel === 'boy' ? 'bg-blue-900/50 border-blue-500 scale-110' : 'bg-slate-900 border-slate-700 opacity-60 hover:opacity-100'}`}
+              className={`px-8 py-6 rounded-2xl border-2 transition-all ${characterModel === 'boy' ? 'bg-blue-900/50 border-blue-500 scale-110 shadow-[0_0_30px_rgba(59,130,246,0.5)]' : 'bg-slate-900 border-slate-700 opacity-60 hover:opacity-100'}`}
             >
-              <div className="text-4xl mb-2">👦</div>
-              <div className="font-bold text-blue-200">DevOps Boy</div>
+              <img src="/assets/devops_guy.png" alt="DevOps Guy" className="w-32 h-32 rounded-xl mb-4 object-cover border border-blue-500/50" />
+              <div className="font-bold text-blue-200 text-xl tracking-wider uppercase">DevOps Guy</div>
             </button>
             <button 
               onClick={() => setCharacter('girl')}
-              className={`px-8 py-6 rounded-2xl border-2 transition-all ${characterModel === 'girl' ? 'bg-pink-900/50 border-pink-500 scale-110' : 'bg-slate-900 border-slate-700 opacity-60 hover:opacity-100'}`}
+              className={`px-8 py-6 rounded-2xl border-2 transition-all ${characterModel === 'girl' ? 'bg-purple-900/50 border-purple-500 scale-110 shadow-[0_0_30px_rgba(168,85,247,0.5)]' : 'bg-slate-900 border-slate-700 opacity-60 hover:opacity-100'}`}
             >
-              <div className="text-4xl mb-2">👧</div>
-              <div className="font-bold text-pink-200">DevOps Girl</div>
+              <img src="/assets/devops_girl.png" alt="DevOps Girl" className="w-32 h-32 rounded-xl mb-4 object-cover border border-purple-500/50" />
+              <div className="font-bold text-purple-200 text-xl tracking-wider uppercase">DevOps Girl</div>
             </button>
           </div>
 

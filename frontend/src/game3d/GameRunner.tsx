@@ -1,29 +1,32 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Sky, Environment } from '@react-three/drei';
+import { Environment, Sparkles } from '@react-three/drei';
 import Player from './Player';
 import WorldBuilder from './WorldBuilder';
 
 export default function GameRunner() {
   return (
-    <div className="absolute inset-0 z-0">
-      <Canvas shadows camera={{ position: [0, 5, 10], fov: 60, rotation: [-0.3, 0, 0] }}>
-        <Sky distance={450000} sunPosition={[0, 1, 0]} inclination={0} azimuth={0.25} />
-        <ambientLight intensity={0.5} />
+    <div className="absolute inset-0 z-0 bg-[#050510]">
+      <Canvas shadows camera={{ position: [0, 5, 12], fov: 60, rotation: [-0.2, 0, 0] }}>
+        <ambientLight intensity={0.2} color="#4c1d95" />
         <directionalLight 
           castShadow 
-          position={[10, 20, 10]} 
-          intensity={1.5} 
+          position={[0, 20, -10]} 
+          intensity={2} 
+          color="#3b82f6"
           shadow-mapSize={[1024, 1024]}
         />
-        <Environment preset="city" />
+        <pointLight position={[0, 2, -20]} intensity={5} color="#ec4899" distance={50} />
         
         {/* Game Objects */}
-        <Player />
-        <WorldBuilder />
+        <Suspense fallback={null}>
+          <Player />
+          <WorldBuilder />
+        </Suspense>
         
-        {/* Fog for endless depth illusion */}
-        <fog attach="fog" args={['#0f172a', 30, 100]} />
+        {/* Atmosphere */}
+        <Sparkles count={200} scale={20} size={2} speed={0.4} opacity={0.2} color="#60a5fa" />
+        <fog attach="fog" args={['#050510', 20, 80]} />
       </Canvas>
     </div>
   );

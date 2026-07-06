@@ -1,7 +1,8 @@
 import React, { useRef, useMemo, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useLoader } from '@react-three/fiber';
 import { useGameStore } from '../store/useGameStore';
 import * as THREE from 'three';
+import { Grid, useTexture } from '@react-three/drei';
 import { getRandomQuestion } from '../data/questions';
 
 const CHUNK_SIZE = 50; // Length of one floor chunk
@@ -24,6 +25,9 @@ interface ChunkData {
 export default function WorldBuilder() {
   const { isPlaying, isPausedForQuiz, isGameOver, speed, pauseForQuiz, takeDamage, collectPowerup } = useGameStore();
   const worldRef = useRef<THREE.Group>(null);
+  
+  const dockerTex = useTexture('/assets/docker.png');
+  const k8sTex = useTexture('/assets/k8s.png');
   
   // Track how far the world has shifted overall to spawn new chunks
   const worldOffsetZ = useRef(0);
@@ -118,42 +122,53 @@ export default function WorldBuilder() {
     <group ref={worldRef}>
       {chunks.map((chunk) => (
         <group key={chunk.id} position={[0, 0, chunk.zBase]}>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.1, -CHUNK_SIZE / 2]}>
-            <planeGeometry args={[LANE_WIDTH * 3 + 2, CHUNK_SIZE]} />
-            <meshStandardMaterial color="#1e293b" />
-          </mesh>
+          {/* Cyberpunk Grid Floor */}
+          <Grid 
+            position={[0, -0.1, -CHUNK_SIZE / 2]} 
+            args={[LANE_WIDTH * 3 + 4, CHUNK_SIZE]} 
+            cellSize={1} 
+            cellThickness={1.5} 
+            cellColor="#3b82f6" 
+            sectionSize={LANE_WIDTH} 
+            sectionThickness={2.5} 
+            sectionColor="#6366f1" 
+            fadeDistance={80} 
+            fadeStrength={1} 
+          />
           
           <mesh position={[-1.5, 0, -CHUNK_SIZE / 2]} rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[0.1, CHUNK_SIZE]} />
-            <meshBasicMaterial color="#334155" />
+            <planeGeometry args={[0.2, CHUNK_SIZE]} />
+            <meshBasicMaterial color="#ec4899" transparent opacity={0.3} />
           </mesh>
           <mesh position={[1.5, 0, -CHUNK_SIZE / 2]} rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[0.1, CHUNK_SIZE]} />
-            <meshBasicMaterial color="#334155" />
+            <planeGeometry args={[0.2, CHUNK_SIZE]} />
+            <meshBasicMaterial color="#ec4899" transparent opacity={0.3} />
           </mesh>
 
           {chunk.obstacles.map(obs => {
-            // Hide collected items
             if ((obs as any).hasCollided && obs.type === 'coin') return null;
+
+            const isDocker = Math.random() > 0.5;
+            const tex = isDocker ? dockerTex : k8sTex;
 
             return (
               <group key={obs.id} position={[obs.lane * LANE_WIDTH, 0, -obs.zOffset]}>
                 {obs.type === 'barrier' && (
                   <mesh castShadow position={[0, 1, 0]}>
-                    <boxGeometry args={[2, 2, 1]} />
-                    <meshStandardMaterial color="#ef4444" />
+                    <boxGeometry args={[2.5, 2, 1]} />
+                    <meshStandardMaterial color="#0f172a" emissive="#ef4444" emissiveIntensity={0.8} />
                   </mesh>
                 )}
                 {obs.type === 'terminal' && (
                   <mesh castShadow position={[0, 1.5, 0]}>
-                    <boxGeometry args={[1.5, 3, 1.5]} />
-                    <meshStandardMaterial color="#3b82f6" emissive="#1d4ed8" emissiveIntensity={0.5} />
+                    <boxGeometry args={[2, 3, 0.5]} />
+                    <meshStandardMaterial map={tex} color="#3b82f6" emissive="#1d4ed8" emissiveIntensity={0.2} />
                   </mesh>
                 )}
                 {obs.type === 'coin' && (
                   <mesh castShadow position={[0, 1, 0]} rotation={[0, Math.random() * Math.PI, 0]}>
-                    <cylinderGeometry args={[0.5, 0.5, 0.2, 16]} />
-                    <meshStandardMaterial color="#eab308" emissive="#ca8a04" metalness={0.8} />
+                    <cylinderGeometry args={[0.6, 0.6, 0.2, 16]} />
+                    <meshStandardMaterial color="#eab308" emissive="#ca8a04" metalness={1} roughness={0.1} />
                   </mesh>
                 )}
               </group>

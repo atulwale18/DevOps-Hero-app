@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import * as THREE from 'three';
 
 export const useGameStore = create((set) => ({
   xp: 0,
@@ -7,7 +6,7 @@ export const useGameStore = create((set) => ({
   badges: [],
   currentMission: null,
   isTerminalOpen: false,
-  playerPosition: new THREE.Vector3(),
+  playerPosition: { x: 0, y: 0, z: 0 },
   completedMissions: [],
   
   addXp: (amount) => set((state) => ({ xp: state.xp + amount })),
